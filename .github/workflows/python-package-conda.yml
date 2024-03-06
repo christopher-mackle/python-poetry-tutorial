@@ -36,7 +36,7 @@ jobs:
       with:
           ## SCANNING: Required fields
           # blackduck_url: ${{ secrets.BLACKDUCK_URL }}
-          blackduck_url: https://synopsys-ssa.app.blackduck.com
+          blackduck_url: https://us03-imp-hub11.nprd.sig.synopsys.com
           # blackduck_token: ${{ secrets.BLACKDUCK_TOKEN }}
           blackduck_token: NTUxZDUxMTYtZTk0NS00OTc1LTk1YTYtMTZiYmY4NTM5YzhmOjRhNzE0M2I5LTE3MGYtNGZiMS05YTM1LWZmZTE1ZTQ2YTAxYw==
           
