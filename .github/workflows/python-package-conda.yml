@@ -1,0 +1,57 @@
+name: Python Package using Conda
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
+      run: |
+        conda env update --file environment.yml --name base
+    - name: Lint with flake8
+      run: |
+        conda install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Synopsys Action
+      uses: synopsys-sig/synopsys-action@v1.7.0
+      ## Configure DETECT environment variables
+      env:
+        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+      with:
+          ## SCANNING: Required fields
+          # blackduck_url: ${{ secrets.BLACKDUCK_URL }}
+          blackduck_url: https://us03-imp-hub11.nprd.sig.synopsys.com
+          # blackduck_token: ${{ secrets.BLACKDUCK_TOKEN }}
+          blackduck_token: MTc5NDdjZmQtZDQyNi00YmQ0LWJmMjctNGMwODc3ODZjNDI1OjI5MmY2YzE3LWI5NWMtNGZlOC05NDE2LTU4YTYwZjVmYTQ2Yg==
+
+          ## SCANNING: Optional fields
+          # blackduck_scan_failure_severities: 'BLOCKER,CRITICAL'
+
+          ## FIX PULL REQUEST CREATION: Uncomment below to enable
+          # blackduck_fixpr_enabled: true
+          # github_token: ${{ secrets.GITHUB_TOKEN }} # Required when Fix PRs is enabled
+          
+          ## PULL REQUEST COMMENTS: Uncomment below to enable
+          # blackduck_prcomment_enabled: true 
+          # github_token: ${{ secrets.GITHUB_TOKEN }} # Required when PR comments is enabled 
+      
+    - name: Test with pytest
+      run: |
+        conda install pytest
+        pytest
